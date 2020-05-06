@@ -131,6 +131,8 @@ namespace GbayWebApp.Controllers
             if ((user.SecurityQuestion1 == model.SecurityQuestion1) && (user.SecurityQuestion2 == model.SecurityQuestion2))
             {
                 var result = await signInManager.PasswordSignInAsync(Email, Password, false, false);
+                TempData["UserEmail"] = null;
+                TempData["UserPassword"] = null;
                 return RedirectToAction("index", "home");
             }
             else
