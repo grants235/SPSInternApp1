@@ -86,8 +86,30 @@ namespace GbayWebApp.Controllers
             }
 
         }
-        
 
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
 
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("index", "home");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid Login Attepmt");
+                
+            }
+
+            return View(model);
+        }
     }
 }
