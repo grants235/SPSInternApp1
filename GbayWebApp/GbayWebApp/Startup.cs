@@ -33,9 +33,14 @@ namespace GbayWebApp
             services.AddDbContext<ApplicationDbContext>(options => 
                 options.UseSqlServer("Server=GRANTS-LONOVO\\SQLEXPRESS;Database=GbayDatabase;Trusted_Connection=True;MultipleActiveResultSets=true"));
 
-            services.AddIdentity<AppUser, AppRole>()
+            services.AddIdentity<AppUser, AppRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 3;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
