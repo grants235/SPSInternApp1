@@ -1,7 +1,25 @@
-﻿
+﻿@model GbayWebApp.ViewModels.RegisterSecQuestions
 @{
-    ViewData["Title"] = "RegisterSecQuestions";
+    ViewData["Title"] = "Register Security Questions";
 }
 
-<h1>RegisterSecQuestions</h1>
+<h1>Set up Security Questions</h1>
 
+<div class="row">
+    <div class="col-md-12">
+        <form method="post">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SecurityQuestion1"></label>
+                <input asp-for="SecurityQuestion1" class="form-control" />
+                <span asp-validation-for="SecurityQuestion1" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SecurityQuestion2"></label>
+                <input asp-for="SecurityQuestion2" class="form-control" />
+                <span asp-validation-for="SecurityQuestion2" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </div>
+</div>

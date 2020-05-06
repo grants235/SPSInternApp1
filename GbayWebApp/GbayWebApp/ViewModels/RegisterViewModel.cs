@@ -22,6 +22,5 @@ namespace GbayWebApp.ViewModels
             ErrorMessage ="Password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-
     }
 }

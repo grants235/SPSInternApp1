@@ -12,7 +12,8 @@ namespace GbayWebApp.Models
 
     public class AppUser : IdentityUser<long>
     {
-
+        public string SecurityQuestion1 { get; set; }
+        public string SecurityQuestion2 { get; set; }
     }
 
     public class AppRole : IdentityRole<long>

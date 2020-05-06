@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using GbayWebApp.Models;
 using GbayWebApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.CodeAnalysis.Differencing;
 
 namespace GbayWebApp.Controllers
 {
@@ -46,7 +49,7 @@ namespace GbayWebApp.Controllers
                 if (result.Succeeded)
                 {
                     await signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("index", "home");
+                    return RedirectToAction("RegisterSecQuestions");
                 }
 
                 foreach(var error in result.Errors)
@@ -57,6 +60,33 @@ namespace GbayWebApp.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult RegisterSecQuestions()
+        {
+            return View();
+        }
+        
+        [HttpPost]
+        public async Task<IActionResult> RegisterSecQuestions(RegisterSecQuestions model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user != null)
+            {
+                user.SecurityQuestion1 = model.SecurityQuestion1;
+                user.SecurityQuestion2 = model.SecurityQuestion2;
+                await userManager.UpdateAsync(user);
+                return RedirectToAction("index", "home");
+            }
+            else
+            {
+                return View("Error");
+            }
+
+        }
+        
 
 
     }
