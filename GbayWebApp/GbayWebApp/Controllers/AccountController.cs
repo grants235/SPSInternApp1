@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.CodeAnalysis.Differencing;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GbayWebApp.Controllers
 {
@@ -98,11 +99,14 @@ namespace GbayWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+                TempData["UserEmail"] = model.Email;
+                TempData["UserPassword"] = model.Password;
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("index", "home");
+                    await signInManager.SignOutAsync();
+                    return RedirectToAction("LoginSecQuestions");
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid Login Attepmt");
@@ -111,5 +115,32 @@ namespace GbayWebApp.Controllers
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult LoginSecQuestions()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoginSecQuestions(LoginSecurityQuestions model)
+        {
+            string Email = TempData["UserEmail"].ToString();
+            string Password = TempData["UserPassword"].ToString();
+            var user = await userManager.FindByEmailAsync(Email);
+            if ((user.SecurityQuestion1 == model.SecurityQuestion1) && (user.SecurityQuestion2 == model.SecurityQuestion2))
+            {
+                var result = await signInManager.PasswordSignInAsync(Email, Password, false, false);
+                return RedirectToAction("index", "home");
+            }
+            else
+            {
+                ModelState.AddModelError(string.Empty, "Invalid security question answers");
+            }
+
+            return View();
+           
+        }
+
     }
 }
