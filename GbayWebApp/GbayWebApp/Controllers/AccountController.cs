@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.CodeAnalysis.Differencing;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Logging;
 
 namespace GbayWebApp.Controllers
 {
@@ -17,12 +18,15 @@ namespace GbayWebApp.Controllers
     {
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
+        private readonly ILogger<AccountController> logger;
 
         public AccountController(UserManager<AppUser> userManager,
-                                 SignInManager<AppUser> signInManager)
+                                 SignInManager<AppUser> signInManager,
+                                 ILogger<AccountController> logger)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -41,15 +45,18 @@ namespace GbayWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+            TempData["CreateUserPassword"] = model.Password;
+            TempData["CreateUserEmail"] = model.Email;
 
             if (ModelState.IsValid)
             {
                 var user = new AppUser { UserName = model.Email, Email = model.Email };
+
                 var result = await userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
-                    await signInManager.SignInAsync(user, isPersistent: false);
+                    //await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("RegisterSecQuestions");
                 }
 
@@ -71,18 +78,65 @@ namespace GbayWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterSecQuestions(RegisterSecQuestions model)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await userManager.FindByIdAsync(userId);
+            string userEmail = TempData["CreateUserEmail"].ToString();
+            //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await userManager.FindByEmailAsync(userEmail);
 
             if (user != null)
             {
                 user.SecurityQuestion1 = model.SecurityQuestion1;
                 user.SecurityQuestion2 = model.SecurityQuestion2;
                 await userManager.UpdateAsync(user);
+
+                var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                                       new { userId = user.Id, token = token }, Request.Scheme);
+
+                logger.Log(LogLevel.Warning, confirmationLink);
+
+                ViewBag.ErrorTitle = "Registration Suscessful";
+                ViewBag.ErrorMessage = "Before you can login, please confirm your " +
+                                       "email, by clicking on the confirmation link we have emailed you";
+                return View("Error");
+            }
+            
+            else
+            {
+                ViewBag.ErrorMessage = "Error Registering please try again";
+                ViewBag.ErrorTitle = "Error";
+                return View("Error");
+            }
+            
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmEmail(string userId, string token)
+        {
+            if (userId ==null || token == null)
+            {
                 return RedirectToAction("index", "home");
+            }
+
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"The User ID {userId} is invalid";
+                ViewBag.ErrorTitle = "Error";
+                return View("Error");
+            }
+
+            var result = await userManager.ConfirmEmailAsync(user, token);
+
+            if (result.Succeeded)
+            {
+                return View();
             }
             else
             {
+                ViewBag.ErrorTitle = "Email Confirmation Error";
+                ViewBag.ErrorMessage = "Please try to confirm your email again";
+
                 return View("Error");
             }
 
@@ -99,13 +153,20 @@ namespace GbayWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user != null && !user.EmailConfirmed && 
+                                      (await userManager.CheckPasswordAsync(user, model.Password)))
+                {
+                    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
+                    return View(model);
+                }
+
+                var result = await userManager.CheckPasswordAsync(user, model.Password);
                 TempData["UserEmail"] = model.Email;
                 TempData["UserPassword"] = model.Password;
 
-                if (result.Succeeded)
+                if (result == true)
                 {
-                    await signInManager.SignOutAsync();
                     return RedirectToAction("LoginSecQuestions");
                 }
 
