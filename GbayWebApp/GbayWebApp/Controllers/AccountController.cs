@@ -81,6 +81,7 @@ namespace GbayWebApp.Controllers
         public async Task<IActionResult> RegisterSecQuestions(RegisterSecQuestions model)
         {
             string userEmail = TempData["CreateUserEmail"].ToString();
+            string userPassword = TempData["CreateUserPassword"].ToString();
             //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await userManager.FindByEmailAsync(userEmail);
 
@@ -94,15 +95,12 @@ namespace GbayWebApp.Controllers
                 var confirmationLink = Url.Action("ConfirmEmail", "Account",
                                        new { userId = user.Id, token = token }, Request.Scheme);
 
-                /*
-                logger.Log(LogLevel.Warning, confirmationLink);
-
                 SmtpClient client = new SmtpClient();
-                client.Connect("smtp-pulse.com", 465, true);
-                client.Authenticate("grantshanklin@gmail.com", "password");
+                client.Connect("smtp.gmail.com", 465, true);
+                client.Authenticate("grantshanklintest@gmail.com", "PasswordHere");
 
                 MimeMessage message = new MimeMessage();
-                MailboxAddress from = new MailboxAddress("Grant Shanklin", "grantshanklin@gmail.com");
+                MailboxAddress from = new MailboxAddress("Grant Shanklin", "grantshanklintest@gmail.com");
                 message.From.Add(from);
                 MailboxAddress to = new MailboxAddress(user.UserName, user.Email);
                 message.To.Add(to);
@@ -114,9 +112,10 @@ namespace GbayWebApp.Controllers
                 client.Send(message);
                 client.Disconnect(true);
                 client.Dispose();
-                */
 
-                return View("login");
+                ViewBag.ErrorTitle = "Registration Suscessful";
+                ViewBag.ErrorMessage = "Befor you can login, please confirm your email by clicking on the confirmation link we have emailed you.";
+                return View("Error");
             }
             
             else
@@ -129,10 +128,10 @@ namespace GbayWebApp.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (userId ==null || token == null)
+            if (userId == null || token == null)
             {
                 return RedirectToAction("index", "home");
             }
@@ -140,8 +139,8 @@ namespace GbayWebApp.Controllers
             var user = await userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                ViewBag.ErrorMessage = $"The User ID {userId} is invalid";
                 ViewBag.ErrorTitle = "Error";
+                ViewBag.ErrorMessage = $"The user ID {userId} is not valid";
                 return View("Error");
             }
 
@@ -151,13 +150,8 @@ namespace GbayWebApp.Controllers
             {
                 return View();
             }
-            else
-            {
-                ViewBag.ErrorTitle = "Email Confirmation Error";
-                ViewBag.ErrorMessage = "Please try to confirm your email again";
-
-                return View("Error");
-            }
+            ViewBag.ErrorTitle = "Email cannot be confirmed";
+            return View("Error");
 
         }
 
@@ -173,8 +167,9 @@ namespace GbayWebApp.Controllers
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByEmailAsync(model.Email);
+                
                 if (user != null && !user.EmailConfirmed && 
-                                      (await userManager.CheckPasswordAsync(user, model.Password)))
+                                    (await userManager.CheckPasswordAsync(user, model.Password)))
                 {
                     ModelState.AddModelError(string.Empty, "Email not confirmed yet");
                     return View(model);
@@ -213,6 +208,7 @@ namespace GbayWebApp.Controllers
                 var result = await signInManager.PasswordSignInAsync(Email, Password, false, false);
                 TempData["UserEmail"] = null;
                 TempData["UserPassword"] = null;
+
                 return RedirectToAction("index", "home");
             }
             else
