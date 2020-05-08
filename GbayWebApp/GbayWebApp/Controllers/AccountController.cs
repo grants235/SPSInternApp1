@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.Extensions.Logging;
 using MailKit.Net.Smtp;
 using MimeKit;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace GbayWebApp.Controllers
 {
@@ -224,6 +226,77 @@ namespace GbayWebApp.Controllers
         public IActionResult ForgotPassword()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByNameAsync(model.Email);
+                if (user != null && await userManager.IsEmailConfirmedAsync(user))
+                {
+                    var token = await userManager.GeneratePasswordResetTokenAsync(user);
+
+                    var passwordResetLink = Url.Action("ResetPassword", "Account", new { email = model.Email, token = token }, Request.Scheme);
+
+                    SmtpClient client = new SmtpClient();
+                    client.Connect("smtp.gmail.com", 465, true);
+                    client.Authenticate("grantshanklintest@gmail.com", "PasswordHere");
+
+                    MimeMessage message = new MimeMessage();
+                    MailboxAddress from = new MailboxAddress("Grant Shanklin", "grantshanklintest@gmail.com");
+                    message.From.Add(from);
+                    MailboxAddress to = new MailboxAddress(user.UserName, user.Email);
+                    message.To.Add(to);
+                    message.Subject = "Reset Password";
+                    BodyBuilder bodyBuilder = new BodyBuilder();
+                    bodyBuilder.TextBody = $"To reset your password, click on the link: {passwordResetLink}";
+                    message.Body = bodyBuilder.ToMessageBody();
+
+                    client.Send(message);
+                    client.Disconnect(true);
+                    client.Dispose();
+
+                    return View("ForgotPasswordConfirmation");
+                }
+                return View("ForgotPasswordConfirmation");
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    var result = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation");
+                    }
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+                return View("ResetPasswordConfirmation");
+            }
+            return View(model);
         }
 
     }
