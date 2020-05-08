@@ -220,5 +220,11 @@ namespace GbayWebApp.Controllers
            
         }
 
+        [HttpGet]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
     }
 }
