@@ -351,5 +351,29 @@ namespace GbayWebApp.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("index", "home");
         }
+
+        [HttpGet]
+        public IActionResult ResetEmail()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetEmail(ResetEmailViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
+                var CheckPassword = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                if (CheckPassword.Succeeded)
+                {
+                    user.Email = model.NewEmail;
+                    user.UserName = model.NewEmail;
+                    await userManager.UpdateAsync(user);
+                    return RedirectToAction("MyAccount");
+                }
+            }
+            return View(model);
+        }
     }
 }
