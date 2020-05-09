@@ -36,13 +36,6 @@ namespace GbayWebApp.Controllers
             this.logger = logger;
             this.configuration = configuration;
         }
-
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            await signInManager.SignOutAsync();
-            return RedirectToAction("index", "home");
-        }
         
         [HttpGet]
         public IActionResult Register()
@@ -323,5 +316,18 @@ namespace GbayWebApp.Controllers
             RedirectToAction("index", "home")
         }
         */
+        
+        [HttpGet]
+        public IActionResult Logout()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LogoutConfirm()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("index", "home");
+        }
     }
 }

@@ -5,6 +5,6 @@
 
 <h1>My Account</h1>
 
-<button class="btn btn-primary" asp-action="ResetSecQuestions" asp-controller="Account">Reset Security Questions</button>
-
-<button class="btn btn-primary" asp-action="ResetPassword" asp-controller="Account">Reset Password</button>
+<a href ="@Url.Action("ResetSecQuestions", "Account")">
+    <button class="btn btn-primary">Reset Security Questions</button>
+</a>
