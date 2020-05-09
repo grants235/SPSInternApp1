@@ -15,6 +15,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Configuration;
 
 namespace GbayWebApp.Controllers
 {
@@ -23,14 +24,17 @@ namespace GbayWebApp.Controllers
         private readonly UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
         private readonly ILogger<AccountController> logger;
+        private readonly IConfiguration configuration;
 
         public AccountController(UserManager<AppUser> userManager,
                                  SignInManager<AppUser> signInManager,
-                                 ILogger<AccountController> logger)
+                                 ILogger<AccountController> logger,
+                                 IConfiguration configuration)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
+            this.configuration = configuration;
         }
 
         [HttpPost]
@@ -99,7 +103,7 @@ namespace GbayWebApp.Controllers
 
                 SmtpClient client = new SmtpClient();
                 client.Connect("smtp.gmail.com", 465, true);
-                client.Authenticate("grantshanklintest@gmail.com", "PasswordHere");
+                client.Authenticate(configuration["EmailUsernameSecret"], configuration["EmailPasswordsecret"]);
 
                 MimeMessage message = new MimeMessage();
                 MailboxAddress from = new MailboxAddress("Grant Shanklin", "grantshanklintest@gmail.com");
@@ -242,7 +246,7 @@ namespace GbayWebApp.Controllers
 
                     SmtpClient client = new SmtpClient();
                     client.Connect("smtp.gmail.com", 465, true);
-                    client.Authenticate("grantshanklintest@gmail.com", "PasswordHere");
+                    client.Authenticate(configuration["EmailUsernameSecret"], configuration["EmailPasswordsecret"]);
 
                     MimeMessage message = new MimeMessage();
                     MailboxAddress from = new MailboxAddress("Grant Shanklin", "grantshanklintest@gmail.com");
