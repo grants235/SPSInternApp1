@@ -303,5 +303,25 @@ namespace GbayWebApp.Controllers
             return View(model);
         }
 
+
+        [HttpGet]
+        public IActionResult MyAccount()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetSecQuestions()
+        {
+            return View();
+        }
+        /*
+
+        [HttpPost]
+        public Task<IActionResult> ResetSecQuestions(ResetSecQuestionsViewModel model)
+        {
+            RedirectToAction("index", "home")
+        }
+        */
     }
 }
