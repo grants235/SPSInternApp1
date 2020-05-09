@@ -7,20 +7,26 @@
 
 <br />
 
-<a href ="@Url.Action("ResetSecQuestions", "Account")">
-    <button class="btn btn-primary">Reset Security Questions</button>
-</a>
+<table class="table">
+    <tr>
+        <th>Status</th>
+        <td>Logged In</td>
+        <td><a href="@Url.Action("Logout", "Account")">Logout</a></td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@User.Identity.Name</td>
+        <td><a href="@Url.Action("ResetEmail", "Account")">Reset Email</a></td>
+    </tr>
+    <tr>
+        <th>Password</th>
+        <td>********</td>
+        <td><a href="@Url.Action("ForgotPassword", "Account")">Reset Password</a></td>
+    </tr>
+    <tr>
+        <th>Security Questions</th>
+        <td>*****    ******</td>
+        <td><a href="@Url.Action("ResetSecQuestions", "Account")">Reset Security Questions</a></td>
+    </tr>
+</table>
 
-<br />
-<br />
-
-<a href="@Url.Action("Logout", "Account")">
-    <button class="btn btn-primary">Logout</button>
-</a>
-
-<br />
-<br />
-
-<a href="@Url.Action("ForgotPassword", "Account")">
-    <button class="btn btn-primary">Reset Password</button>
-</a>
