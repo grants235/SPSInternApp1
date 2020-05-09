@@ -16,17 +16,18 @@ using MimeKit;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNet.Identity;
 
 namespace GbayWebApp.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<AppUser> userManager;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager;
         private readonly SignInManager<AppUser> signInManager;
         private readonly ILogger<AccountController> logger;
         private readonly IConfiguration configuration;
 
-        public AccountController(UserManager<AppUser> userManager,
+        public AccountController(Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager,
                                  SignInManager<AppUser> signInManager,
                                  ILogger<AccountController> logger,
                                  IConfiguration configuration)
@@ -212,6 +213,8 @@ namespace GbayWebApp.Controllers
             }
             else
             {
+                TempData["UserEmail"] = Email;
+                TempData["UserPassword"] = Password;
                 ModelState.AddModelError(string.Empty, "Invalid security question answers");
             }
 
@@ -308,14 +311,33 @@ namespace GbayWebApp.Controllers
         {
             return View();
         }
-        /*
+        
 
         [HttpPost]
-        public Task<IActionResult> ResetSecQuestions(ResetSecQuestionsViewModel model)
+        public async Task<IActionResult> ResetSecQuestions(ResetSecQuestionsViewModel model)
         {
-            RedirectToAction("index", "home")
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
+                var CheckPassword = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                if (CheckPassword.Succeeded)
+                {
+                    user.SecurityQuestion1 = model.SecurityQuestion1;
+                    user.SecurityQuestion2 = model.SecurityQuestion2;
+                    await userManager.UpdateAsync(user);
+
+                    return RedirectToAction("MyAccount");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Incorrect Password");
+                    return View(model);
+                }
+
+            }
+            return View(model);
         }
-        */
+        
         
         [HttpGet]
         public IActionResult Logout()
