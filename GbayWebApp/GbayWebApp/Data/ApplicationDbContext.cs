@@ -13,5 +13,7 @@ namespace GbayWebApp.Data
         {
         }
         public DbSet<AppUser> AppUsers { get; set; }
+
+        public DbSet<Product> Products { get; set; }
     }
 }
