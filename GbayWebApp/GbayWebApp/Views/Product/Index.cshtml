@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @inject SignInManager<AppUser> signInManager;
+
 @model IEnumerable<GbayWebApp.Models.Product>
 
 @{
@@ -29,6 +30,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Seller)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ImgUrl)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -47,6 +51,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Seller)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ImgUrl)
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

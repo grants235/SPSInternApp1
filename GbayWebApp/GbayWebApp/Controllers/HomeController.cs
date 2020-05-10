@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using GbayWebApp.Models;
+using GbayWebApp.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GbayWebApp.Controllers
 {
@@ -13,14 +15,18 @@ namespace GbayWebApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public ApplicationDbContext _context { get; }
+
+        public HomeController(ILogger<HomeController> logger,
+                              ApplicationDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
-            return View();
+            return View(await _context.Products.ToListAsync());
         }
 
         public IActionResult Privacy()
@@ -32,6 +38,24 @@ namespace GbayWebApp.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Product(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
         }
     }
 }

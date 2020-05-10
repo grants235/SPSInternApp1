@@ -62,7 +62,7 @@ namespace GbayWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,ProductName,Description,Price,Seller")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,ProductName,Description,Price,Seller,ImgUrl")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +95,7 @@ namespace GbayWebApp.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductName,Description,Price,Seller")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,ProductName,Description,Price,Seller,ImgUrl")] Product product)
         {
             if (id != product.Id)
             {
@@ -157,6 +157,12 @@ namespace GbayWebApp.Controllers
         private bool ProductExists(int id)
         {
             return _context.Products.Any(e => e.Id == id);
+        }
+
+        [HttpGet]
+        public IActionResult Shop()
+        {
+            return View();
         }
     }
 }

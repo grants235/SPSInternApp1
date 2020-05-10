@@ -12,6 +12,7 @@ namespace GbayWebApp.Models
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Product Name")]
         public string ProductName { get; set; }
 
         public string Description { get; set; }
@@ -21,6 +22,8 @@ namespace GbayWebApp.Models
 
         public string Seller { get; set; }
 
+        [DataType(DataType.Url)]
+        public string ImgUrl { get; set; }
 
 
     }

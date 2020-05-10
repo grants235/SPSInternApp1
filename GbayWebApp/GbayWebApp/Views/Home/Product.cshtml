@@ -1,0 +1,20 @@
+﻿@model GbayWebApp.Models.Product
+@{
+    ViewData["Title"] = "Product";
+}
+
+<img src="@Url.Content(Model.ImgUrl)" style="float:left; width:33%; margin-right: 20px;" />
+
+
+
+<h3>@Html.DisplayFor(model => model.ProductName)</h3>
+<hr />
+<p>@Html.DisplayFor(model => model.Description)</p>
+<h5>$@Html.DisplayFor(model => model.Price)</h5>
+<br />
+<a href="#" class="btn btn-primary">Add to Cart</a>
+<br />
+<p>Published by: @Html.DisplayFor(model => model.Seller)</p>
+
+<a asp-action="Index">Back to List</a>
+
