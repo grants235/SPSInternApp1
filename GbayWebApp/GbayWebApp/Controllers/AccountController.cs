@@ -17,6 +17,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNet.Identity;
+using Microsoft.VisualStudio.Web.CodeGeneration;
 
 namespace GbayWebApp.Controllers
 {
@@ -167,28 +168,31 @@ namespace GbayWebApp.Controllers
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByNameAsync(model.Username);
-                if (user.Email != model.Email)
+                if (user != null)
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid Login Attepmt");
-                    return View(model);
-                }
-                
-                if (user != null && !user.EmailConfirmed && 
-                                    (await userManager.CheckPasswordAsync(user, model.Password)))
-                {
-                    ModelState.AddModelError(string.Empty, "Email not confirmed yet");
-                    return View(model);
-                }
+                    if (user.Email != model.Email)
+                    {
+                        ModelState.AddModelError(string.Empty, "Invalid Login Attepmt");
+                        return View(model);
+                    }
 
-                var result = await userManager.CheckPasswordAsync(user, model.Password);
-                TempData["Username"] = model.Username;
-                TempData["UserPassword"] = model.Password;
+                    if (user != null && !user.EmailConfirmed &&
+                                        (await userManager.CheckPasswordAsync(user, model.Password)))
+                    {
+                        ModelState.AddModelError(string.Empty, "Email not confirmed yet");
+                        return View(model);
+                    }
 
-                if (result == true)
-                {
-                    return RedirectToAction("LoginSecQuestions");
+                    var result = await userManager.CheckPasswordAsync(user, model.Password);
+                    TempData["Username"] = model.Username;
+                    TempData["UserPassword"] = model.Password;
+
+                    if (result == true)
+                    {
+                        return RedirectToAction("LoginSecQuestions");
+                    }
+
                 }
-
                 ModelState.AddModelError(string.Empty, "Invalid Login Attepmt");
                 
             }
@@ -306,8 +310,10 @@ namespace GbayWebApp.Controllers
 
 
         [HttpGet]
-        public IActionResult MyAccount()
+        public async Task<IActionResult> MyAccount()
         {
+            var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
+            ViewBag.Email = user.Email;
             return View();
         }
 
@@ -377,6 +383,35 @@ namespace GbayWebApp.Controllers
                     await userManager.UpdateAsync(user);
                     return RedirectToAction("MyAccount");
                 }
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ResetUsername()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetUsername(ResetUsernameViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
+                if (user.UserName == model.OldUsername)
+                {
+                    var CheckPassword = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+
+                    if (CheckPassword.Succeeded)
+                    {
+                        user.UserName = model.NewUsername;
+                        await userManager.UpdateAsync(user);
+                        return RedirectToAction("MyAccount");
+                    }
+                }
+                ModelState.AddModelError("", "Invalid username or password");
+                return View(model);
             }
             return View(model);
         }

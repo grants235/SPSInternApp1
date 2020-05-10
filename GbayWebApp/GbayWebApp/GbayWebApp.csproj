@@ -5,6 +5,9 @@
     <UserSecretsId>e267cd24-a6d2-4d2e-9205-ed524b399c6e</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="wwwroot\Images\Logo.png" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MailKit" Version="2.6.0" />
     <PackageReference Include="Microsoft.AspNet.Identity.EntityFramework" Version="2.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />

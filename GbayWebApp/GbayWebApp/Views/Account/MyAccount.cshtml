@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "My Account";
 }
+  
 
 <h1>My Account</h1>
 
@@ -14,8 +15,13 @@
         <td><a href="@Url.Action("Logout", "Account")">Logout</a></td>
     </tr>
     <tr>
-        <th>Email</th>
+        <th>Username</th>
         <td>@User.Identity.Name</td>
+        <td><a href="@Url.Action("ResetUsername", "Account")">Reset Username</a></td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@ViewBag.Email</td>
         <td><a href="@Url.Action("ResetEmail", "Account")">Reset Email</a></td>
     </tr>
     <tr>
