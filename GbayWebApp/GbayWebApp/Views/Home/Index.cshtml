@@ -18,7 +18,8 @@
             <div class="card-body">
                 <h4 class="card-title">@Html.DisplayFor(modelItem => item.ProductName)</h4>
                 <h5> $@Html.DisplayFor(modelItem => item.Price)</h5>
-                <a href="#" class="btn btn-primary">Add to Cart</a>
+                <a href="#" class="btn btn-primary" style="margin: 10px;">Add to Cart</a>
+                <br />
                 <p>Published by: @Html.DisplayFor(modelItem => item.Seller)</p>
             </div>
         </div>

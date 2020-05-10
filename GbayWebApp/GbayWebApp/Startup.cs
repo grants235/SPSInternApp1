@@ -30,8 +30,8 @@ namespace GbayWebApp
         {
             services.AddControllersWithViews();
 
-            services.AddDbContext<ApplicationDbContext>(options => 
-                options.UseSqlServer("Server=GRANTS-LONOVO\\SQLEXPRESS;Database=GbayDatabase;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseInMemoryDatabase(databaseName: "GbayWebApplication"));
 
             services.AddIdentity<AppUser, AppRole>(options =>
             {

@@ -48,11 +48,11 @@ namespace GbayWebApp.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             TempData["CreateUserPassword"] = model.Password;
-            TempData["CreateUserEmail"] = model.Email;
+            TempData["CreateUsername"] = model.Username;
 
             if (ModelState.IsValid)
             {
-                var user = new AppUser { UserName = model.Email, Email = model.Email };
+                var user = new AppUser { UserName = model.Username, Email = model.Email };
 
                 var result = await userManager.CreateAsync(user, model.Password);
 
@@ -80,10 +80,10 @@ namespace GbayWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> RegisterSecQuestions(RegisterSecQuestions model)
         {
-            string userEmail = TempData["CreateUserEmail"].ToString();
+            string userName = TempData["CreateUsername"].ToString();
             string userPassword = TempData["CreateUserPassword"].ToString();
             //var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await userManager.FindByEmailAsync(userEmail);
+            var user = await userManager.FindByNameAsync(userName);
 
             if (user != null)
             {
@@ -166,7 +166,12 @@ namespace GbayWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByEmailAsync(model.Email);
+                var user = await userManager.FindByNameAsync(model.Username);
+                if (user.Email != model.Email)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid Login Attepmt");
+                    return View(model);
+                }
                 
                 if (user != null && !user.EmailConfirmed && 
                                     (await userManager.CheckPasswordAsync(user, model.Password)))
@@ -176,7 +181,7 @@ namespace GbayWebApp.Controllers
                 }
 
                 var result = await userManager.CheckPasswordAsync(user, model.Password);
-                TempData["UserEmail"] = model.Email;
+                TempData["Username"] = model.Username;
                 TempData["UserPassword"] = model.Password;
 
                 if (result == true)
@@ -200,12 +205,12 @@ namespace GbayWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginSecQuestions(LoginSecurityQuestions model)
         {
-            string Email = TempData["UserEmail"].ToString();
+            string Username = TempData["Username"].ToString();
             string Password = TempData["UserPassword"].ToString();
-            var user = await userManager.FindByEmailAsync(Email);
+            var user = await userManager.FindByNameAsync(Username);
             if ((user.SecurityQuestion1 == model.SecurityQuestion1) && (user.SecurityQuestion2 == model.SecurityQuestion2))
             {
-                var result = await signInManager.PasswordSignInAsync(Email, Password, false, false);
+                var result = await signInManager.PasswordSignInAsync(Username, Password, false, false);
                 TempData["UserEmail"] = null;
                 TempData["UserPassword"] = null;
 
@@ -213,7 +218,7 @@ namespace GbayWebApp.Controllers
             }
             else
             {
-                TempData["UserEmail"] = Email;
+                TempData["Username"] = Username;
                 TempData["UserPassword"] = Password;
                 ModelState.AddModelError(string.Empty, "Invalid security question answers");
             }
