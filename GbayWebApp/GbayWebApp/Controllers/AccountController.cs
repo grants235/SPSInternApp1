@@ -212,19 +212,22 @@ namespace GbayWebApp.Controllers
             string Username = TempData["Username"].ToString();
             string Password = TempData["UserPassword"].ToString();
             var user = await userManager.FindByNameAsync(Username);
-            if ((user.SecurityQuestion1 == model.SecurityQuestion1) && (user.SecurityQuestion2 == model.SecurityQuestion2))
+            if (user != null)
             {
-                var result = await signInManager.PasswordSignInAsync(Username, Password, false, false);
-                TempData["UserEmail"] = null;
-                TempData["UserPassword"] = null;
+                if ((user.SecurityQuestion1 == model.SecurityQuestion1) && (user.SecurityQuestion2 == model.SecurityQuestion2))
+                {
+                    var result = await signInManager.PasswordSignInAsync(Username, Password, false, false);
+                    TempData["UserEmail"] = null;
+                    TempData["UserPassword"] = null;
 
-                return RedirectToAction("index", "home");
-            }
-            else
-            {
-                TempData["Username"] = Username;
-                TempData["UserPassword"] = Password;
-                ModelState.AddModelError(string.Empty, "Invalid security question answers");
+                    return RedirectToAction("index", "home");
+                }
+                else
+                {
+                    TempData["Username"] = Username;
+                    TempData["UserPassword"] = Password;
+                    ModelState.AddModelError(string.Empty, "Invalid security question answers");
+                }
             }
 
             return View();
@@ -330,19 +333,22 @@ namespace GbayWebApp.Controllers
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
-                var CheckPassword = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-                if (CheckPassword.Succeeded)
+                if (user != null)
                 {
-                    user.SecurityQuestion1 = model.SecurityQuestion1;
-                    user.SecurityQuestion2 = model.SecurityQuestion2;
-                    await userManager.UpdateAsync(user);
+                    var CheckPassword = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                    if (CheckPassword.Succeeded)
+                    {
+                        user.SecurityQuestion1 = model.SecurityQuestion1;
+                        user.SecurityQuestion2 = model.SecurityQuestion2;
+                        await userManager.UpdateAsync(user);
 
-                    return RedirectToAction("MyAccount");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Incorrect Password");
-                    return View(model);
+                        return RedirectToAction("MyAccount");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Incorrect Password");
+                        return View(model);
+                    }
                 }
 
             }
@@ -399,15 +405,18 @@ namespace GbayWebApp.Controllers
             if (ModelState.IsValid)
             {
                 var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
-                if (user.UserName == model.OldUsername)
+                if (user != null)
                 {
-                    var CheckPassword = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
-
-                    if (CheckPassword.Succeeded)
+                    if (user.UserName == model.OldUsername)
                     {
-                        user.UserName = model.NewUsername;
-                        await userManager.UpdateAsync(user);
-                        return RedirectToAction("MyAccount");
+                        var CheckPassword = await signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+
+                        if (CheckPassword.Succeeded)
+                        {
+                            user.UserName = model.NewUsername;
+                            await userManager.UpdateAsync(user);
+                            return RedirectToAction("MyAccount");
+                        }
                     }
                 }
                 ModelState.AddModelError("", "Invalid username or password");
