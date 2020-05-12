@@ -45,6 +45,9 @@
             <td>
                 @string.Join(", ", @Model[i].Roles)
             </td>
+            <td>
+                <a asp-route-id="@Model[i].Id" asp-controller="Administration" asp-action="EditUser">Edit</a>
+            </td>
         </tr>
     }
 

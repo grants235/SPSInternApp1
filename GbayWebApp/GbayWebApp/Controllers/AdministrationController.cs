@@ -228,5 +228,47 @@ namespace GbayWebApp.Controllers
             }
             return View(modelList);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            EditUserViewModel model = new EditUserViewModel
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                SecQuestion1 = user.SecurityQuestion1,
+                SecQuestion2 = user.SecurityQuestion2
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(EditUserViewModel model, string id)
+        {
+            if (id == null)
+            {
+                ViewBag.ErrorMessage = "User Id not found";
+                return View("Error");
+            }
+
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user != null)
+            {
+                user.Email = model.Email;
+                user.SecurityQuestion1 = model.SecQuestion1;
+                user.SecurityQuestion2 = model.SecQuestion2;
+
+                await userManager.UpdateAsync(user);
+
+                return RedirectToAction("ListUsers", "Administration");
+            }
+
+            return View(model);
+            
+        }
     }
 }
