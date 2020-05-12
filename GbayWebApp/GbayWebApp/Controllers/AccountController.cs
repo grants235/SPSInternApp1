@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.VisualStudio.Web.CodeGeneration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GbayWebApp.Controllers
 {
@@ -330,6 +331,7 @@ namespace GbayWebApp.Controllers
 
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> MyAccount()
         {
             var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
@@ -345,6 +347,7 @@ namespace GbayWebApp.Controllers
         
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> ResetSecQuestions(ResetSecQuestionsViewModel model)
         {
             if (ModelState.IsValid)
@@ -374,12 +377,14 @@ namespace GbayWebApp.Controllers
         
         
         [HttpGet]
+        [Authorize]
         public IActionResult Logout()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> LogoutConfirm()
         {
             await signInManager.SignOutAsync();
@@ -387,12 +392,14 @@ namespace GbayWebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult ResetEmail()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> ResetEmail(ResetEmailViewModel model)
         {
             if (ModelState.IsValid)
@@ -411,12 +418,14 @@ namespace GbayWebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult ResetUsername()
         {
             return View();
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> ResetUsername(ResetUsernameViewModel model)
         {
             if (ModelState.IsValid)

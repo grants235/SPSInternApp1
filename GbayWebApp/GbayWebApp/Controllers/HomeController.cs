@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using GbayWebApp.Models;
 using GbayWebApp.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GbayWebApp.Controllers
 {
@@ -30,6 +31,7 @@ namespace GbayWebApp.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> CartAsync()
         {
             return View(await _context.Products.ToListAsync());

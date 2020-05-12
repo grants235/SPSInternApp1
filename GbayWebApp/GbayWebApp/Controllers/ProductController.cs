@@ -9,9 +9,11 @@ using GbayWebApp.Data;
 using GbayWebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GbayWebApp.Controllers
 {
+    [Authorize(Roles = "Administrators,Sellers,Moderators")]
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
