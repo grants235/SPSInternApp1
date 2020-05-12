@@ -9,10 +9,10 @@
 @if (Model.Any())
 {
     <a class="btn btn-primary mb-3" style="width:auto;" asp-action="CreateRole" asp-controller="Administration">Add new role</a>
-
+    <br />
     foreach (var role in Model)
     {
-        <div class="card mb-3">
+        <div class="card mb-3" style="display:inline-block;width:24%">
             <div class="card-header">
                 Role Id : @role.Id
             </div>

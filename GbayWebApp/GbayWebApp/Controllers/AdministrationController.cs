@@ -14,7 +14,7 @@ using Microsoft.VisualStudio.Web.CodeGeneration;
 
 namespace GbayWebApp.Controllers
 {
-    
+
     [Authorize(Roles = "Administrators")]
     public class AdministrationController : Controller
     {
@@ -33,13 +33,13 @@ namespace GbayWebApp.Controllers
             return View();
         }
 
-        
+
         [HttpGet]
         public IActionResult CreateRole()
         {
             return View();
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> CreateRole(CreateRoleViewModel model)
         {
@@ -206,6 +206,27 @@ namespace GbayWebApp.Controllers
 
             return RedirectToAction("EditRole", new { Id = roleId });
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ListUsersAsync()
+        {
+            List<AppUser> users = userManager.Users.ToList();
+            List<ListUsersViewModel> modelList = new List<ListUsersViewModel>(users.Count);
+
+            foreach (var user in users)
+            {
+                ListUsersViewModel vm = new ListUsersViewModel
+                {
+                    Id = user.Id,
+                    Username = user.UserName,
+                    Email = user.Email,
+                    EmailConfirmed = user.EmailConfirmed,
+                    Roles = await userManager.GetRolesAsync(user)
+                };
+                modelList.Add(vm);
+            }
+            return View(modelList);
         }
     }
 }

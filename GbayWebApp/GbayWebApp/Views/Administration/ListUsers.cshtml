@@ -1,0 +1,51 @@
+﻿@model List<GbayWebApp.ViewModels.ListUsersViewModel>
+
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<h1>Manage Users</h1>
+
+<table class="table">
+    <tr>
+        <th>
+            UserId
+        </th>
+        <th>
+            Username
+        </th>
+        <th>
+            Email
+        </th>
+        <th>
+            Email Confirmed
+        </th>
+        <th>
+            Roles
+        </th>
+        <th>
+            Actions
+        </th>
+    </tr>
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <tr>
+            <td>
+                @Model[i].Id
+            </td>
+            <td>
+                @Model[i].Username
+            </td>
+            <td>
+                @Model[i].Email
+            </td>
+            <td>
+                @Model[i].EmailConfirmed
+            </td>
+            <td>
+                @string.Join(", ", @Model[i].Roles)
+            </td>
+        </tr>
+    }
+
+</table>
