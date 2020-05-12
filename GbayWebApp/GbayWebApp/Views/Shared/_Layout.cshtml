@@ -24,13 +24,25 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Products</a>
-                        </li>
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Seller"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="MyProducts">My Products</a>
+                            </li>
+                        }
                         @if (signInManager.IsSignedIn(User) && User.IsInRole("Administrators"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Administration" asp-action="ListRoles">Manage Roles</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Administration" asp-action="ListUsers">Manage Users</a>
+                            </li>
+                        }
+                        @if (signInManager.IsSignedIn(User) & User.IsInRole("Moderator"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Index">Manage Products</a>
                             </li>
                         }
                     </ul>
@@ -43,9 +55,12 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link btn btn-info" asp-area="" asp-controller="Home" asp-action="Cart">Cart</a>
-                            </li>
+                            if (User.IsInRole("Buyers") || User.IsInRole("Moderators"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link btn btn-info" asp-area="" asp-controller="Home" asp-action="Cart">Cart</a>
+                                </li>
+                            }
                         }
                         else
                         {
