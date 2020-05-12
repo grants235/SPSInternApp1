@@ -63,5 +63,6 @@ namespace GbayWebApp.Controllers
 
             return View(product);
         }
+        
     }
 }

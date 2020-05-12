@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.Web.CodeGeneration;
 namespace GbayWebApp.Controllers
 {
     
-    [Authorize]
+    [Authorize(Roles = "Administrators")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<AppRole> roleManager;
