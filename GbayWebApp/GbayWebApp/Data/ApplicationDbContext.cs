@@ -71,44 +71,6 @@ namespace GbayWebApp.Data
                         ImgUrl = "https://pfwo.com/image/cache/catalog/porto/index18/tstprod-500x500.jpg"
                     });
 
-                context.AppUsers.AddRange(
-                    new AppUser
-                    {
-                        Id = 1,
-                        UserName = "Administrator",
-                        NormalizedUserName = "ADMINISTRATOR",
-                        Email = "admin@admin.com",
-                        NormalizedEmail = "ADMIN@ADMIN.COM",
-                        EmailConfirmed = true,
-                        PasswordHash = null,
-                        SecurityQuestion1 = "aminal",
-                        SecurityQuestion2 = "name"
-                    },
-                    new AppUser
-                    {
-                        Id = 2,
-                        UserName = "Seller",
-                        NormalizedUserName = "SELLER",
-                        Email = "test@test.com",
-                        NormalizedEmail = "TEST@TEST.COM",
-                        EmailConfirmed = true,
-                        PasswordHash = null,
-                        SecurityQuestion1 = "aminal",
-                        SecurityQuestion2 = "name"
-                    },
-                    new AppUser
-                    {
-                        Id = 3,
-                        UserName = "Buyer",
-                        NormalizedUserName = "BUYER",
-                        Email = "test@test.com",
-                        NormalizedEmail = "TEST@TEST.COM",
-                        EmailConfirmed = true,
-                        PasswordHash = null,
-                        SecurityQuestion1 = "aminal",
-                        SecurityQuestion2 = "name"
-                    });
-
                 context.SaveChanges();
 
             }

@@ -45,7 +45,7 @@ namespace GbayWebApp
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public async void Configure(IApplicationBuilder app, IWebHostEnvironment env, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
         {
             if (env.IsDevelopment())
             {
@@ -62,9 +62,8 @@ namespace GbayWebApp
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -72,6 +71,76 @@ namespace GbayWebApp
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+
+            AppRole adminRole = new AppRole
+            {
+                Name = "Administrators"
+            };
+            await roleManager.CreateAsync(adminRole);
+
+            AppRole buyerRole = new AppRole
+            {
+                Name = "Buyers"
+            };
+            await roleManager.CreateAsync(buyerRole);
+
+            AppRole sellerRole = new AppRole
+            {
+                Name = "Sellers"
+            };
+            await roleManager.CreateAsync(sellerRole);
+
+            AppRole moderatorRole = new AppRole
+            {
+                Name = "Moderators"
+            };
+            await roleManager.CreateAsync(moderatorRole);
+
+            var adminUser = new AppUser()
+                {
+                    UserName = "Administrator",
+                    Email = "admin@admin.com",
+                    SecurityQuestion1 = "a",
+                    SecurityQuestion2 = "a",
+                    EmailConfirmed = true
+                };
+            await userManager.CreateAsync(adminUser, "P@ssword1");
+            var result = await userManager.AddToRoleAsync(adminUser, adminRole.Name);
+
+            var buyerUser = new AppUser()
+            {
+                UserName = "Buyer",
+                Email = "buyer@buyer.com",
+                SecurityQuestion1 = "b",
+                SecurityQuestion2 = "b",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(buyerUser, "P@ssword1");
+            result = await userManager.AddToRoleAsync(buyerUser, buyerRole.Name);
+
+            var sellerUser = new AppUser()
+            {
+                UserName = "Seller",
+                Email = "seller@seller.com",
+                SecurityQuestion1 = "s",
+                SecurityQuestion2 = "s",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(sellerUser, "P@ssword1");
+            result = await userManager.AddToRoleAsync(sellerUser, sellerRole.Name);
+
+            var moderatorUser = new AppUser()
+            {
+                UserName = "Moderator",
+                Email = "moderator@moderator.com",
+                SecurityQuestion1 = "m",
+                SecurityQuestion2 = "m",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(moderatorUser, "P@ssword1");
+            result = await userManager.AddToRoleAsync(moderatorUser, moderatorRole.Name);
+
         }
     }
 }
+

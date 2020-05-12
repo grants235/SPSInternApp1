@@ -163,7 +163,7 @@ namespace GbayWebApp.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -186,6 +186,16 @@ namespace GbayWebApp.Controllers
                     var result = await userManager.CheckPasswordAsync(user, model.Password);
                     TempData["Username"] = model.Username;
                     TempData["UserPassword"] = model.Password;
+                    if (returnUrl != null)
+                    {
+                        TempData["ReturnUrl"] = returnUrl;
+                        TempData["ReturnUrlCheck"] = "y";
+                    }
+                    else
+                    {
+                        TempData["ReturnUrlCheck"] = "n";
+                    }
+                    
 
                     if (result == true)
                     {
@@ -219,8 +229,15 @@ namespace GbayWebApp.Controllers
                     var result = await signInManager.PasswordSignInAsync(Username, Password, false, false);
                     TempData["UserEmail"] = null;
                     TempData["UserPassword"] = null;
-
-                    return RedirectToAction("index", "home");
+                    string checkReturnUrl = TempData["ReturnUrlCheck"].ToString();
+                    if (checkReturnUrl == "y")
+                    {
+                        return Redirect(TempData["ReturnUrl"].ToString());
+                    }
+                    else
+                    {
+                        return RedirectToAction("index", "home");
+                    }
                 }
                 else
                 {
