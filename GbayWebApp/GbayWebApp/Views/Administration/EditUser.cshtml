@@ -5,7 +5,7 @@
 
 <h1>Edit User</h1>
 
-<div class="row">
+<div class="row" style="width:50%;display:inline-block;">
     <div class="col-md-12">
         <form method="post">
             <div asp-validation-summary="All" class="text-danger"></div>
@@ -20,10 +20,6 @@
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <b><label>Password </label></b>
-                <button class="btn btn-info" asp-controller="Administration" asp-action="ForgotPassword">Send link to reset password</button>
-            </div>
-            <div class="form-group">
                 <b><label asp-for="SecQuestion1"></label></b>
                 <input asp-for="SecQuestion1" class="form-control" />
                 <span asp-validation-for="SecQuestion1" class="text-danger"></span>
@@ -34,7 +30,31 @@
                 <span asp-validation-for="SecQuestion2" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
+            <a class="btn btn-primary" asp-action="ListUsers" asp-controller="Administration">Cancel</a>
         </form>
-
     </div>
+</div>
+<div class="form-group" style="width:50%;display:inline-block;float:right;">
+    <br />
+    <b><label>Password </label></b>
+    <br />
+    <a asp-controller="Administration" asp-action="ForgotPassword" asp-route-id="@Model.Id">
+        <button class="btn btn-dark">Send link to reset password</button>
+    </a>
+    <form method="post" asp-controller="Administration" asp-action="ChangeRoles" asp-route-id="@Model.Id">
+        <div class="col-md-12">
+            <b><label class="col-form-label">Add or remove users from this role</label></b>
+            @for (int i = 0; i < Model.Roles.Count; i++)
+            {
+                <div class="form-check">
+                    <input type="hidden" asp-for="@Model.Roles[i].RoleName" />
+                    <input type="checkbox" class="form-check-input" asp-for="@Model.Roles[i].IsSelected" />
+                    <label class="form-check-label">
+                        @Model.Roles[i].RoleName
+                    </label>
+                </div>
+            }
+            <input type="submit" value="Update" class="btn btn-primary mt-2" style="width:auto;" />
+        </div>
+    </form>
 </div>

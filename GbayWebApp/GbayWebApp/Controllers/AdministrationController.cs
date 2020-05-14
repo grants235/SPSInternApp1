@@ -5,12 +5,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using GbayWebApp.Models;
 using GbayWebApp.ViewModels;
+using MailKit.Net.Smtp;
+using MimeKit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.VisualStudio.Web.CodeGeneration;
+using Microsoft.Extensions.Configuration;
 
 namespace GbayWebApp.Controllers
 {
@@ -20,12 +23,15 @@ namespace GbayWebApp.Controllers
     {
         private readonly RoleManager<AppRole> roleManager;
         private readonly UserManager<AppUser> userManager;
+        private readonly IConfiguration configuration;
 
         public AdministrationController(RoleManager<AppRole> roleManager,
-                                        UserManager<AppUser> userManager)
+                                        UserManager<AppUser> userManager,
+                                        IConfiguration configuration)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
+            this.configuration = configuration;
         }
 
         public IActionResult Index()
@@ -236,11 +242,30 @@ namespace GbayWebApp.Controllers
 
             EditUserViewModel model = new EditUserViewModel
             {
+                Id = user.Id,
                 Username = user.UserName,
                 Email = user.Email,
                 SecQuestion1 = user.SecurityQuestion1,
                 SecQuestion2 = user.SecurityQuestion2
             };
+            var roles = roleManager.Roles.ToList();
+            var rolesUserIsIn = await userManager.GetRolesAsync(user);
+            var RoleList = new List<EditUserRoleViewModel>();
+            for (int i=0; i < roles.Count(); i++)
+            {
+                var vm = new EditUserRoleViewModel();
+                vm.RoleName = roles[i].Name;
+                if (rolesUserIsIn.Contains(roles[i].Name))
+                {
+                    vm.IsSelected = true;
+                }
+                else
+                {
+                    vm.IsSelected = false;
+                }
+                RoleList.Add(vm);
+            }
+            model.Roles = RoleList;
 
             return View(model);
         }
@@ -258,7 +283,34 @@ namespace GbayWebApp.Controllers
 
             if (user != null)
             {
-                user.Email = model.Email;
+                if (user.Email != model.Email)
+                {
+                    user.Email = model.Email;
+                    user.EmailConfirmed = false;
+
+                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var confirmationLink = Url.Action("ConfirmEmail", "Account",
+                                           new { userId = user.Id, token = token }, Request.Scheme);
+
+                    SmtpClient client = new SmtpClient();
+                    client.Connect("smtp.gmail.com", 465, true);
+                    client.Authenticate(configuration["EmailUsernameSecret"], configuration["EmailPasswordsecret"]);
+
+                    MimeMessage message = new MimeMessage();
+                    MailboxAddress from = new MailboxAddress("Grant Shanklin", "grantshanklintest@gmail.com");
+                    message.From.Add(from);
+                    MailboxAddress to = new MailboxAddress(user.UserName, user.Email);
+                    message.To.Add(to);
+                    message.Subject = "Confirm Email";
+                    BodyBuilder bodyBuilder = new BodyBuilder();
+                    bodyBuilder.TextBody = $"Please confirm your email by clicking on this link: {confirmationLink}";
+                    message.Body = bodyBuilder.ToMessageBody();
+
+                    client.Send(message);
+                    client.Disconnect(true);
+                    client.Dispose();
+
+                }
                 user.SecurityQuestion1 = model.SecQuestion1;
                 user.SecurityQuestion2 = model.SecQuestion2;
 
@@ -269,6 +321,102 @@ namespace GbayWebApp.Controllers
 
             return View(model);
             
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ForgotPassword(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            ViewBag.username = user.UserName;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangeRoles(EditUserViewModel model, string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user != null)
+            {
+                for (int i = 0; i < model.Roles.Count; i++)
+                {
+                    var role = await roleManager.FindByNameAsync(model.Roles[i].RoleName);
+
+                    IdentityResult result;
+
+                    if (model.Roles[i].IsSelected && !await userManager.IsInRoleAsync(user, model.Roles[i].RoleName))
+                    {
+                        result = await userManager.AddToRoleAsync(user, model.Roles[i].RoleName);
+                    }
+                    else if (!model.Roles[i].IsSelected && (await userManager.IsInRoleAsync(user, role.Name)))
+                    {
+                        result = await userManager.RemoveFromRoleAsync(user, model.Roles[i].RoleName);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    if (result.Succeeded)
+                    {
+                        if (i < (model.Roles.Count - 1))
+                            continue;
+                        else
+                            return RedirectToAction("ListUsers", "Administration");
+                    }
+                }
+                return RedirectToAction("ListUsers", "Administration");
+            }
+            ViewBag.ErrorTitle = "User Not Found";
+            return View("Error");
+
+        }
+
+        [HttpGet]
+        public IActionResult CreateUser()
+        {
+
+            CreateUserViewModel model = new CreateUserViewModel();
+            
+            var roles = roleManager.Roles.ToList();
+            var RoleList = new List<EditUserRoleViewModel>();
+            for (int i = 0; i < roles.Count(); i++)
+            {
+                var vm = new EditUserRoleViewModel();
+                vm.RoleName = roles[i].Name;
+                vm.IsSelected = false;
+                RoleList.Add(vm);
+            }
+            model.Roles = RoleList;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        {
+            AppUser user = new AppUser();
+            user.UserName = model.Username;
+            user.Email = model.Email;
+            user.SecurityQuestion1 = model.SecQuestion1;
+            user.SecurityQuestion2 = model.SecQuestion2;
+            user.NormalizedUserName = model.Username.ToUpper();
+            user.NormalizedEmail = model.Email.ToUpper();
+
+            var result = await userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                var CreatedUser = await userManager.FindByNameAsync(model.Username);
+                for (int i = 0; i < model.Roles.Count; i++)
+                {
+                    if (model.Roles[i].IsSelected)
+                    {
+                        await userManager.AddToRoleAsync(CreatedUser, model.Roles[i].RoleName);
+                    }
+                }
+                return RedirectToAction("ListUsers", "Administration");
+            }
+            return View(model);
         }
     }
 }
