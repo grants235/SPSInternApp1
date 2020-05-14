@@ -1,0 +1,18 @@
+﻿@model GbayWebApp.ViewModels.DeleteRoleViewModel
+@{
+    ViewData["Title"] = "Delete Role";
+}
+
+<h2>Are you sure you want to delete this role</h2>
+<p>
+    <b>Role Id: </b>
+    @Model.Id
+</p>
+<p>
+    <b>Role Name: </b>
+    @Model.RoleName
+</p>
+<form method="post">
+    <button asp-route-id="@Model.Id" class="btn btn-danger" type="submit">Delete Role</button>
+    <a class="btn btn-primary" asp-controller="Administration" asp-action="ListRole">Cancel</a>
+</form>

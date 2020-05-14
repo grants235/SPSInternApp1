@@ -72,10 +72,26 @@ namespace GbayWebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult ListRoles()
+        public async Task<IActionResult> ListRoles()
         {
             var roles = roleManager.Roles;
-            return View(roles);
+            var users = userManager.Users;
+            ListRolesViewModel model = new ListRolesViewModel();
+            foreach (AppRole role in roles)
+            {
+                ListRolesIndivudalViewModel vm = new ListRolesIndivudalViewModel();
+                vm.Id = role.Id;
+                vm.Name = role.Name;
+                foreach (AppUser user in users)
+                {
+                    if (await userManager.IsInRoleAsync(user, role.Name))
+                    {
+                        vm.Users.Add(user);
+                    }
+                }
+                model.Roles.Add(vm);
+            }
+            return View(model);
         }
 
 
@@ -129,6 +145,31 @@ namespace GbayWebApp.Controllers
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
+                }
+            }
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            DeleteRoleViewModel model = new DeleteRoleViewModel();
+            var role = await roleManager.FindByIdAsync(id);
+            model.Id = role.Id;
+            model.RoleName = role.Name;
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(DeleteRoleViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var role = await roleManager.FindByIdAsync(model.Id.ToString());
+                var result = await roleManager.DeleteAsync(role);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListUsers", "Administration");
                 }
             }
             return View(model);
