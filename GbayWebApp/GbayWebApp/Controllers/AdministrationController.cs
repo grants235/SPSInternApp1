@@ -395,28 +395,66 @@ namespace GbayWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser(CreateUserViewModel model)
         {
-            AppUser user = new AppUser();
-            user.UserName = model.Username;
-            user.Email = model.Email;
-            user.SecurityQuestion1 = model.SecQuestion1;
-            user.SecurityQuestion2 = model.SecQuestion2;
-            user.NormalizedUserName = model.Username.ToUpper();
-            user.NormalizedEmail = model.Email.ToUpper();
-
-            var result = await userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                var CreatedUser = await userManager.FindByNameAsync(model.Username);
-                for (int i = 0; i < model.Roles.Count; i++)
+                AppUser user = new AppUser();
+                user.UserName = model.Username;
+                user.Email = model.Email;
+                user.SecurityQuestion1 = model.SecQuestion1;
+                user.SecurityQuestion2 = model.SecQuestion2;
+                user.NormalizedUserName = model.Username.ToUpper();
+                user.NormalizedEmail = model.Email.ToUpper();
+
+                var result = await userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
                 {
-                    if (model.Roles[i].IsSelected)
+                    var CreatedUser = await userManager.FindByNameAsync(model.Username);
+                    for (int i = 0; i < model.Roles.Count; i++)
                     {
-                        await userManager.AddToRoleAsync(CreatedUser, model.Roles[i].RoleName);
+                        if (model.Roles[i].IsSelected)
+                        {
+                            await userManager.AddToRoleAsync(CreatedUser, model.Roles[i].RoleName);
+                        }
                     }
+                    return RedirectToAction("ListUsers", "Administration");
                 }
-                return RedirectToAction("ListUsers", "Administration");
+                return View(model);
             }
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                DeleteUserViewModel model = new DeleteUserViewModel
+                {
+                    Username = user.UserName,
+                    Email = user.Email,
+                    Id = user.Id
+                };
+                return View(model);
+            }
+            ViewBag.ErrorTitle = "The user that you want to delete cannot be found";
+            return View("Error");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(DeleteUserViewModel model, string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                var result = await userManager.DeleteAsync(user);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ListUsers", "Administration");
+                }
+            }
+            ViewBag.ErrorTitle = "The user that you want to delete cannot be found";
+            return View("Error");
         }
     }
 }

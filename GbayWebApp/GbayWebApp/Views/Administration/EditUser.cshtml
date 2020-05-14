@@ -30,6 +30,7 @@
                 <span asp-validation-for="SecQuestion2" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
+            <a class="btn btn-danger" asp-action="DeleteUser" asp-controller="Administration" asp-route-id="@Model.Id">Delete</a>
             <a class="btn btn-primary" asp-action="ListUsers" asp-controller="Administration">Cancel</a>
         </form>
     </div>
@@ -38,8 +39,8 @@
     <br />
     <b><label>Password </label></b>
     <br />
-    <a asp-controller="Administration" asp-action="ForgotPassword" asp-route-id="@Model.Id">
-        <button class="btn btn-dark">Send link to reset password</button>
+    <a asp-controller="Administration" asp-action="ForgotPassword" asp-route-id="@Model.Id" class="btn btn-dark">
+        Send link to reset password
     </a>
     <form method="post" asp-controller="Administration" asp-action="ChangeRoles" asp-route-id="@Model.Id">
         <div class="col-md-12">

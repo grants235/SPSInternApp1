@@ -1,0 +1,22 @@
+﻿@model GbayWebApp.ViewModels.DeleteUserViewModel
+@{
+    ViewData["Title"] = "Delete User";
+}
+
+<h2>Are you sure you want to delete this user</h2>
+<p>
+    <b>Username: </b>
+    @Model.Username
+</p>
+<p>
+    <b>Email: </b>
+    @Model.Email
+</p>
+<p>
+    <b>Password: </b>
+    **********
+</p>
+<form method="post">
+    <button asp-route-id="@Model.Id" class="btn btn-danger" type="submit">Delete User</button>
+    <a class="btn btn-primary" asp-controller="Administration" asp-action="ListUsers">Cancel</a>
+</form>
