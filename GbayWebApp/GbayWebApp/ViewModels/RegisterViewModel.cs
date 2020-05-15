@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GbayWebApp.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,6 +9,11 @@ namespace GbayWebApp.ViewModels
 {
     public class RegisterViewModel
     {
+        public RegisterViewModel()
+        {
+            this.Roles = new List<EditUserRoleViewModel>();
+        }
+
         [Required]
         public string Username { get; set; }
 
@@ -24,6 +30,8 @@ namespace GbayWebApp.ViewModels
         [Compare("Password", 
             ErrorMessage ="Password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        public List<EditUserRoleViewModel> Roles { get; set; }
 
     }
 }

@@ -28,22 +28,34 @@ namespace GbayWebApp.Controllers
         private readonly SignInManager<AppUser> signInManager;
         private readonly ILogger<AccountController> logger;
         private readonly IConfiguration configuration;
+        private readonly Microsoft.AspNetCore.Identity.RoleManager<AppRole> roleManager;
 
         public AccountController(Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager,
                                  SignInManager<AppUser> signInManager,
                                  ILogger<AccountController> logger,
-                                 IConfiguration configuration)
+                                 IConfiguration configuration,
+                                 Microsoft.AspNetCore.Identity.RoleManager<AppRole> roleManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
             this.configuration = configuration;
+            this.roleManager = roleManager;
         }
         
         [HttpGet]
         public IActionResult Register()
         {
-            return View();
+            RegisterViewModel model = new RegisterViewModel();
+            var roles = roleManager.Roles;
+            foreach (AppRole role in roles)
+            {
+                EditUserRoleViewModel vm = new EditUserRoleViewModel();
+                vm.IsSelected = false;
+                vm.RoleName = role.Name;
+                model.Roles.Add(vm);
+            }
+            return View(model);
         }
 
         [HttpPost]
@@ -60,6 +72,14 @@ namespace GbayWebApp.Controllers
 
                 if (result.Succeeded)
                 {
+                    var NewUser = await userManager.FindByNameAsync(model.Username);
+                    foreach (var role in model.Roles)
+                    {
+                        if (role.IsSelected)
+                        {
+                            await userManager.AddToRoleAsync(NewUser, role.RoleName);
+                        }
+                    }
                     //await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("RegisterSecQuestions");
                 }

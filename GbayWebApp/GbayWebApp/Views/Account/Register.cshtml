@@ -29,6 +29,24 @@
                 <input asp-for="ConfirmPassword" class="form-control" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label>Are you going to buy or sell products?</label>
+                @for (int i = 0; i < Model.Roles.Count; i++)
+                {
+                    if (Model.Roles[i].RoleName == "Buyers" || Model.Roles[i].RoleName == "Sellers")
+                    {
+                        <br />
+                        <input asp-for="@Model.Roles[i].RoleName" type="hidden" value="@Model.Roles[i].RoleName" />
+                        <input asp-for="@Model.Roles[i].IsSelected" type="checkbox" />
+                        <label>@Model.Roles[i].RoleName</label>
+                    }
+                    else
+                    {
+                        <input asp-for="@Model.Roles[i].RoleName" type="hidden" value="@Model.Roles[i].RoleName" />
+                        <input asp-for="@Model.Roles[i].IsSelected" type="hidden"/>
+                    }
+                }
+            </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>
     </div>
