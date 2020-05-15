@@ -24,7 +24,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Seller"))
+                        @if (signInManager.IsSignedIn(User) && User.IsInRole("Sellers"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="MyProducts">My Products</a>

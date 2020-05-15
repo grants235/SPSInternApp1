@@ -10,6 +10,7 @@ using GbayWebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authorization;
+using GbayWebApp.ViewModels;
 
 namespace GbayWebApp.Controllers
 {
@@ -33,6 +34,22 @@ namespace GbayWebApp.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Products.ToListAsync());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> MyProducts()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            var products = await _context.Products.ToListAsync();
+            MyProductsViewModel model = new MyProductsViewModel();
+            foreach (var product in products)
+            {
+                if (product.Seller == user.UserName)
+                {
+                    model.ProductList.Add(product);
+                }
+            }
+            return View(model);
         }
 
         // GET: Product/Details/5
@@ -71,7 +88,7 @@ namespace GbayWebApp.Controllers
                 product.Seller = User.Identity.GetUserName();
                 _context.Add(product);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MyProducts", "Product");
             }
             return View(product);
         }
