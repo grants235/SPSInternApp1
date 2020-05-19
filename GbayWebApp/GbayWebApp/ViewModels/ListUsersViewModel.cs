@@ -14,6 +14,7 @@ namespace GbayWebApp.ViewModels
         public string Email { get; set; }
         public bool EmailConfirmed { get; set; }
         public IList<string> Roles { get; set; }
+        public int Credits { get; set; }
 
     }
 }

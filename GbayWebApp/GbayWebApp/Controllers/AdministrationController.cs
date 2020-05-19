@@ -497,5 +497,45 @@ namespace GbayWebApp.Controllers
             ViewBag.ErrorTitle = "The user that you want to delete cannot be found";
             return View("Error");
         }
+
+        [HttpGet]
+        public IActionResult ListCredits()
+        {
+            List<AppUser> users = userManager.Users.ToList();
+            List<ListUsersViewModel> modelList = new List<ListUsersViewModel>(users.Count);
+
+            foreach (var user in users)
+            {
+                ListUsersViewModel vm = new ListUsersViewModel
+                {
+                    Id = user.Id,
+                    Username = user.UserName,
+                    Credits = user.Credits
+                };
+                modelList.Add(vm);
+            }
+            return View(modelList);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> EditCredits(string id)
+        {
+            var model = new EditCreditViewMOdel();
+            var user = await userManager.FindByIdAsync(id);
+
+            model.User = user;
+            model.Credits = user.Credits;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditCredits(string id, EditCreditViewMOdel model)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            user.Credits = model.Credits;
+            await userManager.UpdateAsync(user);
+            return RedirectToAction("ListCredits");
+        }
     }
 }

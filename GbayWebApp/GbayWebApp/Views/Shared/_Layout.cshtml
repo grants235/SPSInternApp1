@@ -38,6 +38,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Administration" asp-action="ListRoles">Manage Roles</a>
                             </li>
+                            <li class="nav-item">
+                                <a class=" nav-link text-dark" asp-area="" asp-controller="Administration" asp-action="ListCredits">Manage Credits</a>
+                            </li>
                             
                         }
                         @if (signInManager.IsSignedIn(User) & User.IsInRole("Moderators"))

@@ -1,0 +1,15 @@
+﻿@model GbayWebApp.ViewModels.EditCreditViewMOdel;
+@{
+    ViewData["Title"] = "Edit Credits";
+}
+
+<h1>Edit Credits</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label>Credits</label>
+        <input asp-for="Credits" class="form-control" style="width:15%;"/>
+        <input asp-for="User" hidden />
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
