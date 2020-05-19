@@ -1,0 +1,64 @@
+﻿@model GbayWebApp.ViewModels.ShoppingCartViewModel;
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+<div class="row checkoutForm">
+    <h2>Your shopping cart</h2>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th style="width:50%">Product</th>
+                <th style="width:10%">Price</th>
+                <th style="width:8%">Quantity</th>
+                <th style="width:22%" class="text-center">Subtotal</th>
+                <th style="width:10%">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var line in Model.ShoppingCart.ShoppingCartItems)
+            {
+                <tr>
+                    <td data-th="Product">
+                        <a asp-action="Product" asp-route-id="@line.Product.Id" class="card-link">
+                            <div class="row">
+                                <div class="col-sm-2 hidden-xs"><img src="@Url.Content(line.Product.ImgUrl)" class="img-responsive" style="width:80px" /></div>
+                                <div class="col-sm-10">
+                                    <h4 class="nomargin">@line.Product.ProductName</h4>
+                                    <p>@line.Product.Description</p>
+                                </div>
+                            </div>
+                        </a>
+                    </td>
+                    <td data-th="Price">@line.Product.Price.ToString("c")</td>
+                    <td data-th="Quantity">
+                        <input type="number" class="form-control text-center" value="@line.Amount">
+                    </td>
+                    <td data-th="Subtotal" class="text-center">@line.Product.Price.ToString("c")</td>
+                    <td class="actions" data-th="">
+                        <button class="btn btn-danger btn-sm"><a asp-action="RemoveFromShoppingCart" asp-route-id="@line.Product.Id" style="text-decoration:none; color:white;">Delete</a></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-right">Total:</td>
+                <td class="text-right">
+                    @Model.ShoppingCartTotal.ToString("c")
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="text-right">
+        <div class="btn-group ">
+            <a asp-action="index" asp-controller="Home" class="btn btn-primary"><i class="fa fa-angle-left"></i> Continue Shopping</a>
+            <a class="btn btn-success" asp-controller="Order" asp-action="Checkout">Check out</a>
+        </div>
+    </div>
+</div>
+

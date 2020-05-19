@@ -1,42 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using GbayWebApp.Models;
+using GbayWebApp.ViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using GbayWebApp.Models;
+using MailKit.Net.Smtp;
+using MimeKit;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authorization;
 using GbayWebApp.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace GbayWebApp.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager;
 
         public ApplicationDbContext _context { get; }
 
         public HomeController(ILogger<HomeController> logger,
-                              ApplicationDbContext context)
+                              ApplicationDbContext context,
+                              Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager)
         {
             _logger = logger;
             _context = context;
+            this.userManager = userManager;
         }
 
         public async Task<IActionResult> IndexAsync()
         {
             return View(await _context.Products.ToListAsync());
         }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<IActionResult> CartAsync()
-        {
-            return View(await _context.Products.ToListAsync());
-        }
-
+        
         public IActionResult Privacy()
         {
             return View();
