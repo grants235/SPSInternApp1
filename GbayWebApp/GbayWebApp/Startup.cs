@@ -110,7 +110,8 @@ namespace GbayWebApp
                     Email = "admin@admin.com",
                     SecurityQuestion1 = "a",
                     SecurityQuestion2 = "a",
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    Credits = 50
                 };
             await userManager.CreateAsync(adminUser, "P@ssword1");
             var result = await userManager.AddToRoleAsync(adminUser, adminRole.Name);
@@ -121,7 +122,8 @@ namespace GbayWebApp
                 Email = "buyer@buyer.com",
                 SecurityQuestion1 = "b",
                 SecurityQuestion2 = "b",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Credits = 50
             };
             await userManager.CreateAsync(buyerUser, "P@ssword1");
             result = await userManager.AddToRoleAsync(buyerUser, buyerRole.Name);
@@ -132,7 +134,8 @@ namespace GbayWebApp
                 Email = "seller@seller.com",
                 SecurityQuestion1 = "s",
                 SecurityQuestion2 = "s",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Credits = 50
             };
             await userManager.CreateAsync(sellerUser, "P@ssword1");
             result = await userManager.AddToRoleAsync(sellerUser, sellerRole.Name);
@@ -143,7 +146,8 @@ namespace GbayWebApp
                 Email = "moderator@moderator.com",
                 SecurityQuestion1 = "m",
                 SecurityQuestion2 = "m",
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                Credits = 50
             };
             await userManager.CreateAsync(moderatorUser, "P@ssword1");
             result = await userManager.AddToRoleAsync(moderatorUser, moderatorRole.Name);

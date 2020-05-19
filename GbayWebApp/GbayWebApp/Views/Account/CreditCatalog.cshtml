@@ -1,0 +1,23 @@
+﻿@model GbayWebApp.Models.CreditOption
+@inject GbayWebApp.Data.ApplicationDbContext applicationDbContext
+
+@{
+    ViewData["Title"] = "Credit Catalog";
+}
+
+<h2>You currently have @ViewBag.CurrentCredits credits</h2>
+
+<div>
+    @foreach (var option in applicationDbContext.BuyCreditOptions)
+    {
+        <div class="card" style="width: 15rem; display:inline-grid; margin: 15px; text-align:center;">
+            <div class="card-body">
+                <h4 class="card-title">@option.NumberOfCredits credits for $@option.Price</h4>
+                <form method="post" asp-action="BuyCreditOption" asp-controller="Account" asp-route-id="@option.Id">
+                    <button class="btn btn-success" style="margin: 10px;" type="submit">Buy</button>
+                </form>
+                <br />
+            </div>
+        </div>
+    }
+</div>

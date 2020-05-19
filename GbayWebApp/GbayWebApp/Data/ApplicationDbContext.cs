@@ -19,6 +19,7 @@ namespace GbayWebApp.Data
 
         public DbSet<Product> Products { get; set; }
         public DbSet<ShoppingCartItem> ShoppingCartItems { get; set; }
+        public DbSet<BuyCreditOption> BuyCreditOptions { get; set; }
     }
 
     public class DataGenerator
@@ -70,6 +71,21 @@ namespace GbayWebApp.Data
                         Price = 99.99m,
                         Seller = "Grant",
                         ImgUrl = "https://pfwo.com/image/cache/catalog/porto/index18/tstprod-500x500.jpg"
+                    });
+
+                context.BuyCreditOptions.AddRange(
+
+                    new BuyCreditOption
+                    {
+                        Id = 1,
+                        NumberOfCredits = 20,
+                        Price = 15
+                    },
+                    new BuyCreditOption
+                    {
+                        Id = 2,
+                        NumberOfCredits = 50,
+                        Price = 40
                     });
 
                 context.SaveChanges();

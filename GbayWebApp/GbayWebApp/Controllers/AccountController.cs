@@ -9,6 +9,8 @@ using MimeKit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authorization;
+using GbayWebApp.Data;
+using System.Linq;
 
 namespace GbayWebApp.Controllers
 {
@@ -19,18 +21,21 @@ namespace GbayWebApp.Controllers
         private readonly ILogger<AccountController> logger;
         private readonly IConfiguration configuration;
         private readonly Microsoft.AspNetCore.Identity.RoleManager<AppRole> roleManager;
+        private readonly ApplicationDbContext applicationDbContext;
 
         public AccountController(Microsoft.AspNetCore.Identity.UserManager<AppUser> userManager,
                                  SignInManager<AppUser> signInManager,
                                  ILogger<AccountController> logger,
                                  IConfiguration configuration,
-                                 Microsoft.AspNetCore.Identity.RoleManager<AppRole> roleManager)
+                                 Microsoft.AspNetCore.Identity.RoleManager<AppRole> roleManager,
+                                 ApplicationDbContext applicationDbContext)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
             this.configuration = configuration;
             this.roleManager = roleManager;
+            this.applicationDbContext = applicationDbContext;
         }
         
         [HttpGet]
@@ -346,6 +351,7 @@ namespace GbayWebApp.Controllers
         {
             var user = await userManager.FindByIdAsync(User.Identity.GetUserId());
             ViewBag.Email = user.Email;
+            ViewBag.Credits = user.Credits;
             return View();
         }
 
@@ -465,6 +471,26 @@ namespace GbayWebApp.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreditCatalog()
+        {
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            ViewBag.CurrentCredits = user.Credits;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BuyCreditOption(int id)
+        {
+            var creditOption = applicationDbContext.BuyCreditOptions.FirstOrDefault(m => m.Id == id);
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+
+            user.Credits += creditOption.NumberOfCredits;
+            await userManager.UpdateAsync(user);
+
+            return RedirectToAction("MyAccount", "Account");
         }
     }
 }
