@@ -33,6 +33,11 @@ namespace GbayWebApp.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await userManager.FindByNameAsync(User.Identity.Name);
+                ViewBag.Credits = user.Credits;
+            }
             return View(await _context.Products.ToListAsync());
         }
         

@@ -5,23 +5,28 @@ using System.Threading.Tasks;
 using GbayWebApp.Data;
 using GbayWebApp.Models;
 using GbayWebApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GbayWebApp.Controllers
 {
+    [Authorize]
     public class ShoppingCartController : Controller
     {
         private readonly ShoppingCart _shoppingCart;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> userManager;
 
-        public ShoppingCartController(ShoppingCart shoppingCart, ApplicationDbContext context)
+        public ShoppingCartController(ShoppingCart shoppingCart, ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _shoppingCart = shoppingCart;
             _context = context;
+            this.userManager = userManager;
         }
 
        
-        public ViewResult Index()
+        public async Task<ViewResult> Index()
         {
             var items = _shoppingCart.GetShoppingCartItems();
             _shoppingCart.ShoppingCartItems = items;
@@ -31,7 +36,8 @@ namespace GbayWebApp.Controllers
                 ShoppingCart = _shoppingCart,
                 ShoppingCartTotal = _shoppingCart.GetShoppingCartTotal()
             };
-
+            var user = await userManager.FindByNameAsync(User.Identity.Name);
+            ViewBag.Credits = user.Credits;
             return View(model);
         }
 

@@ -24,7 +24,7 @@ namespace GbayWebApp.Models
         public string SecurityQuestion2 { get; set; }
 
         public List<Product> CartProducts { get; set; }
-        public int Credits { get; set; }
+        public decimal Credits { get; set; }
     }
 
 

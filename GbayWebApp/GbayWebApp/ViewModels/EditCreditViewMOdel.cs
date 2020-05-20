@@ -9,6 +9,6 @@ namespace GbayWebApp.ViewModels
     public class EditCreditViewMOdel
     {
         public AppUser User { get; set; }
-        public int Credits { get; set; }
+        public decimal Credits { get; set; }
     }
 }

@@ -11,5 +11,6 @@ namespace GbayWebApp.Models
         public Product Product { get; set; }
         public int Amount { get; set; }
         public string ShoppingCartId { get; set; }
+        public string Seller { get; set; }
     }
 }
