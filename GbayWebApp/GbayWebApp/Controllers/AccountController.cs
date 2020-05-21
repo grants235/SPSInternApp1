@@ -235,9 +235,18 @@ namespace GbayWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginSecQuestions(LoginSecurityQuestions model)
         {
-            string Username = TempData["Username"].ToString();
-            string Password = TempData["UserPassword"].ToString();
+            string Username = "";
+            string Password = "";
+            if (TempData["Username"] != null && TempData["UserPassword"] != null)
+            {
+                Username = TempData["Username"].ToString();
+                Password = TempData["UserPassword"].ToString();
+            }
             var user = await userManager.FindByNameAsync(Username);
+            if (user == null)
+            {
+                return RedirectToAction("Login");
+            }
             if (user != null)
             {
                 if ((user.SecurityQuestion1 == model.SecurityQuestion1) && (user.SecurityQuestion2 == model.SecurityQuestion2))
