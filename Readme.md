@@ -14,10 +14,10 @@ The application was developed using ASP.NET Core 3. If you choose to run it outs
 
 There are a few built-in account that you can use to test out this application. 
 
-| Account Type | Username | Email | Password | Credit Card | Account Number |
-|--------------|----------|-------|----------|-------------|----------------|
-|Buyer| | | | |111111111|
-|Seller| | | | |222222222|
-|Moderator| | | | |333333333|
-|Administrator| | | | |444444444|
+| Account Type | Username | Email | Password | Security Question 1 Answer | Security Question 2 Answer |
+|--------------|----------|-------|----------|----------------------------|----------------------------|
+|Buyers|Buyer|buyer@buyer.com|P@ssword1|b|b|
+|Sellers|Seller|seller@seller.com|P@ssword1|s|s|
+|Moderators|Moderator|moderator@moderator.com|P@ssword1|m|m|
+|Administrators|Administrator|administrator@administrator.com|P@ssword1|a|a|
 
