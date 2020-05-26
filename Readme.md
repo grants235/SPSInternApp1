@@ -19,5 +19,5 @@ There are a few built-in account that you can use to test out this application.
 |Buyers|Buyer|buyer@buyer.com|P@ssword1|b|b|
 |Sellers|Seller|seller@seller.com|P@ssword1|s|s|
 |Moderators|Moderator|moderator@moderator.com|P@ssword1|m|m|
-|Administrators|Administrator|administrator@administrator.com|P@ssword1|a|a|
+|Administrators|Administrator|admin@admin.com|P@ssword1|a|a|
 
