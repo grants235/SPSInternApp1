@@ -188,7 +188,7 @@ namespace GbayWebApp.Controllers
                 {
                     if (user.Email != model.Email)
                     {
-                        ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+                        ModelState.AddModelError(string.Empty, "Invalid Login Attepmt");
                         return View(model);
                     }
 
@@ -273,7 +273,7 @@ namespace GbayWebApp.Controllers
             }
 
             return View();
-            
+           
         }
 
         [HttpGet]
@@ -293,8 +293,6 @@ namespace GbayWebApp.Controllers
                     var token = await userManager.GeneratePasswordResetTokenAsync(user);
 
                     var passwordResetLink = Url.Action("ResetPassword", "Account", new { email = model.Email, token = token }, Request.Scheme);
-
-                    ViewBag.Link = token;
 
                     SmtpClient client = new SmtpClient();
                     client.Connect("smtp.gmail.com", 465, true);
