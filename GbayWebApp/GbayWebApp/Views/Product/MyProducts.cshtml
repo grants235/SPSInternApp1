@@ -11,16 +11,15 @@
 
 @foreach (var product in Model.ProductList)
 {
-    <a asp-action="Product" asp-route-id="@product.Id" asp-controller="Home" class="card-link">
-        <div class="card" style="width: 15rem; display:inline-block; margin: 15px; text-align:center;">
-            <img src="@Url.Content(product.ImgUrl)" class="card-img-top" />
-            <div class="card-body">
-                <h4 class="card-title">@Html.DisplayFor(modelItem => product.ProductName)</h4>
-                <h5> $@Html.DisplayFor(modelItem => product.Price)</h5>
-                <a href="#" class="btn btn-primary" style="margin: 10px;">Add to Cart</a>
-                <br />
-                <p>Published by: @Html.DisplayFor(modelItem => product.Seller)</p>
-            </div>
+
+    <div class="card" style="width: 15rem; display:inline-block; margin: 15px; text-align:center;">
+        <img src="@Url.Content(product.ImgUrl)" class="card-img-top" />
+        <div class="card-body">
+            <h4 class="card-title">@Html.DisplayFor(modelItem => product.ProductName)</h4>
+            <h5> $@Html.DisplayFor(modelItem => product.Price)</h5>
+            <a class="btn btn-primary" asp-controller="Product" asp-action="Edit" asp-route-id="@product.Id">Edit</a>
+            <br />
+            <p>Published by: @Html.DisplayFor(modelItem => product.Seller)</p>
         </div>
-    </a>
+    </div>
 }
