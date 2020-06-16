@@ -139,9 +139,9 @@ namespace GbayWebApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Product", "MyProducts");
+                return RedirectToAction("MyProducts", "Product");
             }
-            return RedirectToAction("Product", "MyProducts");
+            return RedirectToAction("MyProducts", "Product");
         }
 
         // GET: Product/Delete/5
